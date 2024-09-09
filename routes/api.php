@@ -6,9 +6,9 @@ use App\Http\Controllers\Api\CategoriesController;
 use App\Http\Controllers\Api\CitiesController;
 use App\Http\Controllers\Api\DestinationsController;
 use App\Http\Controllers\Api\EnquiryDataController;
-use App\Http\Controllers\Api\TourCitiesController;
 use App\Http\Controllers\Api\ToursController;
 use App\Http\Controllers\Api\ImageController;
+use App\Http\Controllers\Api\TourDestinationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,14 +33,16 @@ Route::apiResource('categories', CategoriesController::class);
 Route::apiResource('tours', ToursController::class);
 
 // TourCities routes
-Route::apiResource('tour-cities', TourCitiesController::class)->parameters([
-    'tour-cities' => 'tourCity'
-])->except(['show', 'update', 'destroy']);
-
-Route::get('tour-cities/{tourId}/{cityId}', [TourCitiesController::class, 'show']);
-Route::put('tour-cities/{tourId}/{cityId}', [TourCitiesController::class, 'update']);
-Route::delete('tour-cities/{tourId}/{cityId}', [TourCitiesController::class, 'destroy']);
 
 // EnquiryData routes
 Route::apiResource('enquiry-data', EnquiryDataController::class);
 Route::get('/images/{imageName}', [ImageController::class, 'show'])->name('image.show');
+
+// Tour Destinations routes
+Route::prefix('tour-destinations')->group(function () {
+    Route::get('/', [TourDestinationController::class, 'index']);
+    Route::post('/', [TourDestinationController::class, 'store']);
+    Route::get('{tourId}/{destinationId}', [TourDestinationController::class, 'show']);
+    Route::put('{tourId}/{destinationId}', [TourDestinationController::class, 'update']);
+    Route::delete('{tourId}/{destinationId}', [TourDestinationController::class, 'destroy']);
+});

@@ -1,0 +1,47 @@
+### Get all tours
+GET http://localhost:8000/api/tours
+Accept: application/json
+
+### Get a specific tour
+GET http://localhost:8000/api/tours/1
+Accept: application/json
+
+### Create a new tour
+POST http://localhost:8000/api/tours
+Content-Type: application/json
+Accept: application/json
+
+{
+    "category_id": 1,
+    "name": "New Adventure Tour",
+    "title": "Exciting Journey Through the Mountains",
+    "description": "Experience the thrill of mountain climbing and scenic views.",
+    "itinerary": "Day 1: Arrival, Day 2-3: Mountain trek, Day 4: Return",
+    "duration": "4 days",
+    "price": 999.99,
+    "status": "active",
+    "start_date": "2023-09-01",
+    "end_date": "2023-09-04",
+    "max_travelers": 15,
+    "difficulty_level": "moderate"
+}
+
+### Update an existing tour
+PUT http://localhost:8000/api/tours/1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "category_id": 1,
+    "name": "Updated Adventure Tour",
+    "status": "inactive"
+}
+
+### Delete a tour
+DELETE http://localhost:8000/api/tours/1
+Accept: application/json
+
+### Get all destinations
+GET http://localhost:8000/api/destinations
+Accept: application/json
+

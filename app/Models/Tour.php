@@ -14,7 +14,8 @@ class Tour extends Model
     protected $fillable = [
         'destination_id', 'category_id', 'name', 'title', 'description',
         'duration', 'price', 'image_url', 'status', 'start_date', 'end_date',
-        'max_travelers', 'difficulty_level'
+        'max_travelers', 'difficulty_level',
+        'main_image_url'
     ];
 
     public function destination()
@@ -40,5 +41,17 @@ class Tour extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function destinations()
+    {
+        return $this->belongsToMany(Destination::class, 'tour_destinations')
+                    ->withPivot('stop_order')
+                    ->withTimestamps();
+    }
+
+    public function images()
+    {
+        return $this->hasMany(TourImage::class);
     }
 }

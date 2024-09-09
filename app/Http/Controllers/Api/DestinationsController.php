@@ -14,7 +14,7 @@ class DestinationsController extends Controller
 {
     public function index()
     {
-        $destinations = Destination::all();
+        $destinations = Destination::with('tours')->get();
         return response()->json($destinations);
     }
 
@@ -70,51 +70,67 @@ class DestinationsController extends Controller
         return response()->json($destination, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): \Illuminate\Http\JsonResponse
     {
+        Log::info("Updating destination with ID: {$id}");
+        Log::info("Received request data: " . json_encode($request->except('image_url')));
+        // Find the destination or fail if not found
         $destination = Destination::findOrFail($id);
-        Log::info("Full request data: " . json_encode($request->all()));
-        // Log the received request data excluding the image
-        Log::info("Received request: " . json_encode($request->except('image_url')));
-
+        Log::info("Found destination: " . json_encode($destination));
+        // Validate the request input
         $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|file|image|max:2048',
+            'name' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'image_url' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'dimensions:max_width=3000,max_height=3000'],
         ]);
-
-        // Only select the necessary fields
-        $updateData = $request->only(['name', 'title', 'description']);
-
-        DB::transaction(function () use ($request, $destination, &$updateData) {
-            if ($request->hasFile('image_url')) {
+        Log::info("Request validation passed");
+        // Prepare data excluding the image file
+        $data = $request->except('image_url');
+        // Handle the image file if provided
+        if ($request->hasFile('image_url')) {
+            Log::info("New image file received: " . $request->file('image_url')->getClientOriginalName());
+            $image = $request->file('image_url');
+            $imageName = date('Y-m-d_H-i-s') . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            try {
                 // Delete the old image if it exists
                 if ($destination->image_url) {
+                    Log::info("Deleting old image: " . $destination->image_url);
                     Storage::disk('public')->delete($destination->image_url);
                 }
-                // Store the new image
-                $image = $request->file('image_url');
-                $imageName = date('Y-m-d_H-i-s') . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $imagePath = Storage::disk('public')->putFileAs('images', $image, $imageName);
 
-                // Ensure $imagePath is a string
-                if (is_string($imagePath)) {
-                    $updateData['image_url'] = $imagePath;
-                } else {
-                    Log::error("Image path is not a string: " . json_encode($imagePath));
-                }
+                // Store the new image and get the path
+                $path = Storage::disk('public')->putFileAs('images', $image, $imageName);
+                $data['image_url'] = $path;
+                Log::info("New image stored successfully: " . $path);
+            } catch (\Exception $e) {
+                // Log the error and return an error response
+                Log::error("Error storing image: " . $e->getMessage());
+                return response()->json(['error' => 'Image upload failed due to an internal error. Please try again later.'], 500);
             }
+        } else {
+            Log::info("No new image file in request");
+            // Remove image_url from $data if not provided
+            unset($data['image_url']);
+        }
 
-            // Log the update data to verify its structure before updating
-            Log::info("Update data: " . json_encode($updateData));
+        // Check for changes and update
+        $changes = array_diff_assoc($data, $destination->toArray());
+        if (!empty($changes)) {
+            Log::info("Updating destination with data: " . json_encode($changes));
+            $destination->update($data);
+            Log::info("Destination updated successfully");
+        } else {
+            Log::info("No changes detected, destination not updated");
+        }
 
-            // Update the destination with the correct data
-            $destination->update($updateData);
-        });
+        // Refresh the destination model to get the latest data
+        $destination->refresh();
 
+        // Return the updated destination with a success message
+        Log::info("Returning updated destination: " . json_encode($destination));
         return response()->json([
-            'message' => 'Destination updated successfully',
+            'success' => true,
             'destination' => $destination
         ], 200);
     }
