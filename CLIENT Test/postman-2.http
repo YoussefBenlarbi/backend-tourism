@@ -45,3 +45,77 @@ Accept: application/json
 GET http://localhost:8000/api/destinations
 Accept: application/json
 
+### Create a new tour with destinations
+POST http://localhost:8000/api/tours
+Content-Type: application/json
+Accept: application/json
+
+{
+    "category_id": 1,
+    "name": "Mountain and Beach Adventure",
+    "title": "Explore Mountains and Relax on Beaches",
+    "description": "Experience the thrill of mountain trekking followed by relaxation on pristine beaches.",
+    "itinerary": "Day 1-2: Mountain trek, Day 3-4: Beach relaxation, Day 5: Return",
+    "duration": "5 days",
+    "price": 1299.99,
+    "status": "active",
+    "start_date": "2023-10-01",
+    "end_date": "2023-10-05",
+    "max_travelers": 12,
+    "difficulty_level": "moderate",
+    "destinations": [
+        {
+            "name": "Alpine Peaks",
+            "description": "Majestic mountain range with challenging trails and breathtaking views.",
+            "location": "Rocky Mountains"
+        },
+        {
+            "name": "Sunset Beach",
+            "description": "Beautiful coastal area with golden sands and crystal-clear waters.",
+            "location": "Pacific Coast"
+        }
+    ]
+}
+
+### Create a new tour with destinations (using destination IDs)
+POST http://localhost:8000/api/tours
+Content-Type: application/json
+Accept: application/json
+
+{
+    "category_id": 1,
+    "name": "Mountain and Beach Adventure",
+    "title": "Explore Mountains and Relax on Beaches",
+    "description": "Experience the thrill of mountain trekking followed by relaxation on pristine beaches.",
+    "itinerary": "Day 1-2: Mountain trek, Day 3-4: Beach relaxation, Day 5: Return",
+    "duration": "5 days",
+    "price": 1299.99,
+    "status": "active",
+    "start_date": "2023-10-01",
+    "end_date": "2023-10-05",
+    "max_travelers": 12,
+    "difficulty_level": "moderate",
+    "destination_ids": [1, 2]
+}
+
+### Update an existing tour with new destinations
+PUT http://localhost:8000/api/tours/12
+Content-Type: application/json
+Accept: application/json
+
+{
+    "category_id": 1,
+    "name": "Updated Mountain and Beach Adventure",
+    "title": "Revised: Explore Mountains and Relax on Beaches",
+    "description": "An updated tour featuring mountain trekking and beach relaxation.",
+    "itinerary": "Day 1: Arrival, Day 2-3: Mountain trek, Day 4-5: Beach relaxation, Day 6: Return",
+    "duration": "6 days",
+    "price": 1499.99,
+    "status": "active",
+    "start_date": "2023-11-01",
+    "end_date": "2023-11-06",
+    "max_travelers": 10,
+    "difficulty_level": "moderate",
+    "destination_ids": [2, 3]
+}
+

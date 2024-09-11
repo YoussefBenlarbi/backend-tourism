@@ -14,6 +14,14 @@ class TourDestination extends Model
     // Define the primary key as an array of the composite key fields
     protected $primaryKey = ['tour_id', 'destination_id'];
 
+    protected function setKeysForSaveQuery($query)
+    {
+        $query
+            ->where('tour_id', '=', $this->getAttribute('tour_id'))
+            ->where('destination_id', '=', $this->getAttribute('destination_id'));
+
+        return $query;
+    }
     // Define relationships if needed
     public function tour()
     {

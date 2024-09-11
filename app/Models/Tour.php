@@ -12,11 +12,12 @@ class Tour extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'destination_id', 'category_id', 'name', 'title', 'description',
-        'duration', 'price', 'image_url', 'status', 'start_date', 'end_date',
-        'max_travelers', 'difficulty_level',
-        'main_image_url'
+        'category_id', 'name', 'title', 'description',
+        'duration', 'price', 'image_url', 'status',
+        'start_date', 'end_date', 'max_travelers',
+        'difficulty_level', 'main_image_url'
     ];
+    
 
     public function destination()
     {

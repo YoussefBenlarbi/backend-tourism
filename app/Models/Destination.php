@@ -20,8 +20,6 @@ class Destination extends Model
 
     public function tours()
     {
-        return $this->belongsToMany(Tour::class, 'tour_destinations')
-                    ->withPivot('stop_order')
-                    ->withTimestamps();
+        return $this->belongsToMany(Tour::class, 'tour_destinations')->withPivot('stop_order');
     }
 }

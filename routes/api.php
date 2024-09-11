@@ -46,3 +46,5 @@ Route::prefix('tour-destinations')->group(function () {
     Route::put('{tourId}/{destinationId}', [TourDestinationController::class, 'update']);
     Route::delete('{tourId}/{destinationId}', [TourDestinationController::class, 'destroy']);
 });
+
+Route::get('destinations/{id}/tours', [ToursController::class, 'getToursByDestination']);
